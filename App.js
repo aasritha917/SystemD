@@ -1,20 +1,30 @@
-var Engine = /** @class */ (function () {
-    function Engine() {
+var PetrolEngine = /** @class */ (function () {
+    function PetrolEngine() {
     }
-    Engine.prototype.start = function () {
-        console.log("Engine started");
+    PetrolEngine.prototype.start = function () {
+        console.log("Petrol engine started");
     };
-    return Engine;
+    return PetrolEngine;
+}());
+var DieselEngine = /** @class */ (function () {
+    function DieselEngine() {
+    }
+    DieselEngine.prototype.start = function () {
+        console.log("Diesel engine started");
+    };
+    return DieselEngine;
 }());
 var Car = /** @class */ (function () {
-    function Car() {
-        this.engine = new Engine();
+    function Car(engine) {
+        this.engine = engine;
     }
     Car.prototype.drive = function () {
         this.engine.start();
-        console.log("Car is driving");
+        console.log("Driving car");
     };
     return Car;
 }());
-var myCar = new Car();
-myCar.drive();
+var petrolCar = new Car(new PetrolEngine());
+petrolCar.drive();
+var dieselCar = new Car(new DieselEngine());
+dieselCar.drive();

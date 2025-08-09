@@ -1,37 +1,75 @@
-var Bike = /** @class */ (function () {
-    function Bike(brand) {
-        this.brand = brand;
+// Idle State
+var IdleState = /** @class */ (function () {
+    function IdleState() {
     }
-    Bike.prototype.getDetails = function () {
-        return "Bike: ".concat(this.brand);
+    IdleState.prototype.insertCoin = function (machine) {
+        console.log("Coin inserted. Moving to Processing state.");
+        machine.setState(machine.processingState);
     };
-    return Bike;
+    IdleState.prototype.selectItem = function () {
+        console.log("You must insert a coin first.");
+    };
+    IdleState.prototype.dispenseItem = function () {
+        console.log("You must insert a coin and select an item first.");
+    };
+    return IdleState;
 }());
-var Car = /** @class */ (function () {
-    function Car(brand) {
-        this.brand = brand;
+// Processing State
+var ProcessingState = /** @class */ (function () {
+    function ProcessingState() {
     }
-    Car.prototype.getDetails = function () {
-        return "Car: ".concat(this.brand);
+    ProcessingState.prototype.insertCoin = function () {
+        console.log("Coin already inserted.");
     };
-    return Car;
+    ProcessingState.prototype.selectItem = function (machine) {
+        console.log("Item selected. Moving to Dispensing state.");
+        machine.setState(machine.dispensingState);
+    };
+    ProcessingState.prototype.dispenseItem = function () {
+        console.log("You must select an item first.");
+    };
+    return ProcessingState;
 }());
-var VehicleFactory = /** @class */ (function () {
-    function VehicleFactory() {
+// Dispensing State
+var DispensingState = /** @class */ (function () {
+    function DispensingState() {
     }
-    VehicleFactory.createVehicle = function (type, brand) {
-        switch (type) {
-            case "Bike":
-                return new Bike(brand);
-            case "Car":
-                return new Car(brand);
-            default:
-                throw new Error("Invalid vehicle type");
-        }
+    DispensingState.prototype.insertCoin = function () {
+        console.log("Please wait. Currently dispensing item.");
     };
-    return VehicleFactory;
+    DispensingState.prototype.selectItem = function () {
+        console.log("Already dispensing. Please wait.");
+    };
+    DispensingState.prototype.dispenseItem = function (machine) {
+        console.log("Dispensing item... Returning to Idle state.");
+        machine.setState(machine.idleState);
+    };
+    return DispensingState;
 }());
-var myBike = VehicleFactory.createVehicle("Bike", "Yamaha");
-console.log(myBike.getDetails()); // Bike: Yamaha
-var myCar = VehicleFactory.createVehicle("Car", "Toyota");
-console.log(myCar.getDetails()); // Car: Toyota
+// Vending Machine
+var VendingMachine = /** @class */ (function () {
+    function VendingMachine() {
+        this.idleState = new IdleState();
+        this.processingState = new ProcessingState();
+        this.dispensingState = new DispensingState();
+        this.currentState = this.idleState; // Start in Idle
+    }
+    VendingMachine.prototype.setState = function (state) {
+        this.currentState = state;
+    };
+    VendingMachine.prototype.insertCoin = function () {
+        this.currentState.insertCoin(this);
+    };
+    VendingMachine.prototype.selectItem = function () {
+        this.currentState.selectItem(this);
+    };
+    VendingMachine.prototype.dispenseItem = function () {
+        this.currentState.dispenseItem(this);
+    };
+    return VendingMachine;
+}());
+// Example Usage
+var machine = new VendingMachine();
+machine.insertCoin();
+machine.selectItem();
+machine.dispenseItem();
